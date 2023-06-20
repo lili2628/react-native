@@ -14,7 +14,7 @@ import {
   Keyboard
 } from 'react-native';
 import { useState } from 'react';
-
+import * as ImagePicker from 'expo-image-picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 
@@ -29,6 +29,10 @@ function RegistrationScreen() {
     password: false,
   });
   const [isShowPassword, setIsShowPassword] = useState(true);
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [avatarUri, setAvatarUri] = useState("");
 
   const hideKeyboard = () => {
     setIsShowKeyBoard(false);
@@ -37,6 +41,7 @@ function RegistrationScreen() {
 
   const submit = () => {
     hideKeyboard();
+    console.log(login, email, password);
   };
     
   const onInputFocus = textInput => {
@@ -70,7 +75,7 @@ function RegistrationScreen() {
             <View
               style={{
                 ...styles.form,
-                paddingBottom: isShowKeyboard ? hp('7%') : hp('9%'),
+                paddingBottom: isShowKeyboard ? hp('5%') : hp('9%'),
               }}
             >
               <View style={styles.avatarContainer}>
@@ -85,6 +90,7 @@ function RegistrationScreen() {
               <TextInput
                 inputMode="text"
                 placeholder="Логін"
+                value={login}
                 style={{
                   ...styles.input,
                   borderColor: isActiveInput.login ? '#FF6C00' : '#E8E8E8',
@@ -95,10 +101,12 @@ function RegistrationScreen() {
                 }}
                 onBlur={() => onInputBlur('login')}
                 onSubmitEditing={submit}
+                onChangeText={setLogin}
               />
               <TextInput
                 inputMode="email"
                 placeholder="Адреса електронної пошти"
+                value={email}
                 style={{
                   ...styles.input,
                   borderColor: isActiveInput.email ? '#FF6C00' : '#E8E8E8',
@@ -109,6 +117,7 @@ function RegistrationScreen() {
                 }}
                 onBlur={() => onInputBlur('email')}
                 onSubmitEditing={submit}
+                onChangeText={setEmail}
               />
               <View>
                 <TouchableOpacity
@@ -122,6 +131,7 @@ function RegistrationScreen() {
                 <TextInput
                   inputMode="text"
                   placeholder="Пароль"
+                  value={password}
                   secureTextEntry={isShowPassword}
                   style={{
                     ...styles.input,
@@ -134,12 +144,13 @@ function RegistrationScreen() {
                   }}
                   onBlur={() => onInputBlur('password')}
                   onSubmitEditing={submit}
+                  onChangeText={setPassword}
                 />
-              </View>
-              <View style={{ display: isShowKeyboard ? 'none' : 'flex' }}>
                 <TouchableOpacity style={styles.buttonForm} onPress={submit}>
                   <Text style={styles.buttonFormText}>{'Увійти'}</Text>
                 </TouchableOpacity>
+              </View>
+              <View >
                 <Text
                   style={styles.link}
                 >
