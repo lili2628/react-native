@@ -1,21 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import React from "react";
-import { StyleSheet,  SafeAreaView } from 'react-native';
-import  LoginScreen  from './Screens/LoginScreen';
+import { StyleSheet,  SafeAreaView, Button } from 'react-native';
+import LoginScreen from './Screens/LoginScreen';
+import Home from './Screens/Home';
 import RegistrationScreen from './Screens/RegistrationScreen';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from 'expo-font';
+import 'react-native-gesture-handler';
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    
-  },
-});
 
+
+const MainStack = createStackNavigator();
 
 
 export default function App() {
@@ -33,11 +30,31 @@ export default function App() {
   }
  
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
-      {/*<LoginScreen />*/}
-      <RegistrationScreen /> 
-    </SafeAreaView>
+    <NavigationContainer>
+      <MainStack.Navigator initialRouteName="Login">
+        <MainStack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="Login"
+          component={LoginScreen} 
+          options={{
+          headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{
+            headerShown: false,
+          }}
+        /> 
+      </MainStack.Navigator>
+    </NavigationContainer>
   );
 };
 
