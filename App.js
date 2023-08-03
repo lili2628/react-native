@@ -1,13 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
+import 'react-native-gesture-handler';
 import React from "react";
-import { StyleSheet,  SafeAreaView, Button } from 'react-native';
 import LoginScreen from './Screens/LoginScreen';
 import Home from './Screens/Home';
 import RegistrationScreen from './Screens/RegistrationScreen';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from 'expo-font';
-import 'react-native-gesture-handler';
 
 
 

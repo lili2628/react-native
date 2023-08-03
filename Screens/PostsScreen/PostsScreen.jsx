@@ -1,46 +1,29 @@
-import React from "react";
+import React from 'react';
+//import { } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import PostList from '../../components/PostList';
-import { StyleSheet } from 'react-native';
+import DefaultPostsScreen from '../DefaultPostsScreen';
+import  CommentsScreen from '../CommentsScreen';
+import MapScreen from '../MapScreen';
 
-const PostStack = createStackNavigator();
+const NestedScreen = createStackNavigator();
 
-const screenOptions = ({ navigation, route }) => ({
-  ...styles,
-  headerShown: false,
-});
-
-function PostsScreen  ({ navigation }) {
+const PostsScreen = () => {
   return (
-    <PostStack.Navigator screenOptions={screenOptions}>
-      <PostStack.Screen
-        name="Posts"
-        component={PostList}
+    <NestedScreen.Navigator>
+      <NestedScreen.Screen
+        name="DefaultPostsScreen"
+        component={DefaultPostsScreen} 
       />
-    </PostStack.Navigator>
+      <NestedScreen.Screen
+       name="Map"
+        component={MapScreen} 
+      />
+     <NestedScreen.Screen
+        name="Comments"
+        component={CommentsScreen} 
+    />
+    </NestedScreen.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  headerTintColor: '#212121',
-  headerTitleAlign: 'center',
-  headerTitleStyle: {
-    fontWeight: '500',
-    fontSize: 17,
-  },
-  headerTitleContainerStyle: {
-    justifyContent: 'flex-end',
-    paddingBottom: 11,
-    paddingHorizontal: 16,
-  },
-  headerRightContainerStyle: {
-    justifyContent: 'flex-end',
-    paddingHorizontal: 16,
-  },
-  headerLeftContainerStyle: {
-    justifyContent: 'flex-end',
-    paddingHorizontal: 16,
-  },
-});
 
 export default PostsScreen;
