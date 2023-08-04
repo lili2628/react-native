@@ -1,24 +1,20 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useEffect } from 'react';
 import {
   View,
   Text,
-  Keyboard,
   Platform,
   KeyboardAvoidingView,
-  FlatList,
   StyleSheet,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import CommentForm from '../../components/CommentForm';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+
 
 const CommentsScreen = ({ navigation, route }) => {
 
   useEffect(() => {
-    
-    navigation.setOptions({
+  navigation.setOptions({
+    title: 'Коментарі',
       headerLeft: () => (
         <Feather
           name="arrow-left"
@@ -28,9 +24,10 @@ const CommentsScreen = ({ navigation, route }) => {
             navigation.goBack();
           }}
         />
-      ),
-    });
-  }, [navigation]);
+      ),  
+      headerRight: () => { },
+  });
+}, [navigation]);
 
 
   

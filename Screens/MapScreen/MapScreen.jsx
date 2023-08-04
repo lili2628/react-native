@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { Feather } from '@expo/vector-icons';
 
 
 const MapScreen = ({ navigation, route }) => {
@@ -14,6 +15,24 @@ const MapScreen = ({ navigation, route }) => {
       setLocation(route.params.location);
     }
   }, [route.params]);
+
+  useEffect(() => {
+  navigation.setOptions({
+    title: 'Карта',
+      headerLeft: () => (
+        <Feather
+          name="arrow-left"
+          size={24}
+          color={styles.headerBackBtn}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
+      ),  
+      headerRight: () => { },
+  });
+}, [navigation]);
+
 
   return (
     <View style={styles.container}>

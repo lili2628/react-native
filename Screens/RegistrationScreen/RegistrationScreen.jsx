@@ -47,7 +47,6 @@ function RegistrationScreen() {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
            
     if (reg.test(email) === true) {
-      console.log(login, email, password);
       backHome();
     } else {
       alert('Please, enter email in valid form');

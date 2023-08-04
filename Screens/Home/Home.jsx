@@ -99,8 +99,7 @@ function Home  ({ navigation, route, options }) {
         name="PostsScreen"
         component={PostsScreen}
         options={{
-          title: 'Публікації',
-          headerLeft: () => {},
+           headerShown: false,
         }}
       />
 

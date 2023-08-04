@@ -33,7 +33,7 @@ const Post = ({ post, navigation}) => {
           <Text style={styles.titlePost} ellipsizeMode="tail" numberOfLines={1}>
             {post.titlePost}
           </Text>
-
+          
           <View style={styles.buttonsWrp}>
             <TouchableOpacity
               style={styles.buttonComments}
@@ -46,7 +46,7 @@ const Post = ({ post, navigation}) => {
                   color={styles.commentsIcon.fill}
                 />
               </View>
-              <Text style={styles.commentsCount}>count comments</Text>
+              <Text style={styles.commentsCount}>count com</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   buttonComments: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: 40,
   },
   commentsIcon: {
     marginRight: hp('0.6%'),
