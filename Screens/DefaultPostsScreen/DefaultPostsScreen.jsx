@@ -40,23 +40,24 @@ const DefaultPostsScreen = ({ navigation, route }) =>  {
 }, [navigation]);
 
   return (
-    <Container>
-      <View style={styles.main}>
-        <View style={styles.avatarContainer}>
-                <View style={styles.avatarWrp}>
-                </View>
-        </View>
+  <>
+      
+       
       
 
-
+      <Container>
+         <View style={styles.avatarContainer}>
+                <View style={styles.avatarWrp}>
+                </View>
+         </View>
         <View style={styles.containerList}>
           <FlatList  data={posts}
               keyExtractor={(item, indx) => indx.toString()}
               renderItem={({ item }) => <Post post={item} navigation={navigation} />}
           />
         </View>
-      </View>
-    </Container>
+      </Container>
+   </>
   );
 };
 
@@ -73,19 +74,19 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   avatarContainer: {
-    alignSelf: 'left',
+    
     borderRadius: 16,
-    backgroundColor: '#F6F6F6',
     marginTop: 20,
     marginBottom: 20,
     marginHorizontal: 16,
+    
   },
   avatarWrp: {
     borderRadius: 16,
     overflow: 'hidden',
     height: hp('8%'),
     width: hp('8%'),
-    borderColor: '#375575',
+    backgroundColor: '#e4e4e4',
   },
 });
 
