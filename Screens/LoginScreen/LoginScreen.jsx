@@ -1,7 +1,7 @@
-
 import React from "react";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-
 import {
   StyleSheet,
   Text,
@@ -14,38 +14,40 @@ import {
   TouchableOpacity,
   Keyboard
 } from 'react-native';
-import Container from '../../components/Container';
-import { useState } from 'react';
-
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-
+import Container from '../../components/Container';
+import { authSignInUser } from '../../redux/auth/uathOperations.js';
 
 function LoginScreen() {
+  const imageBg = require('../../images/bg-image.jpg');
   
   const navigation = useNavigation();
-  const imageBg = require('../../images/bg-image.jpg');
+  const dispatch = useDispatch();
   const [isShowKeyboard, setIsShowKeyBoard] = useState(false);
   const [isActiveInput, setIsActiveInput] = useState({
     email: false,
     password: false,
   });
   const [isShowPassword, setIsShowPassword] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const initialState = {
+    email: '',
+    password: '',
+  };
+  const [state, setState] = useState({...initialState});
+  
 
   const hideKeyboard = () => {
     setIsShowKeyBoard(false);
     Keyboard.dismiss();
   };
 
-  const backHome = () => navigation.navigate("Home");
 
-    const validation = () => {
+  const validation = (email) => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
            
     if (reg.test(email) === true) {
-      backHome();
+      return true;
     } else {
       alert('Please, enter email in valid form');
     }
@@ -53,7 +55,20 @@ function LoginScreen() {
 
   const submit = () => {
     hideKeyboard();
-    validation();
+
+    const validEmail = validation(state.email);
+
+    if (validEmail) {
+      dispatch(authSignInUser(state)).then(data => {
+        if (data === undefined || !data.user) {
+          alert('Sign In is failed');
+          console.log(data);
+        } else {
+          navigation.navigate("Home");
+        }; 
+      });
+    };
+
   };
     
   const onInputFocus = textInput => {
@@ -94,7 +109,7 @@ function LoginScreen() {
                 <TextInput
                   inputMode="email"
                   placeholder="Адреса електронної пошти"
-                  value={email}
+                  value={state.email}
                   style={{
                     ...styles.input,
                     borderColor: isActiveInput.email ? '#FF6C00' : '#E8E8E8',
@@ -105,7 +120,10 @@ function LoginScreen() {
                   }}
                   onBlur={() => onInputBlur('email')}
                   onSubmitEditing={submit}
-                  onChangeText={setEmail}
+                  onChangeText={value => setState(prev => ({
+                    ...prev,
+                    email: value,
+                  }))}
                 />
                 <View>
                   <TouchableOpacity
@@ -119,7 +137,7 @@ function LoginScreen() {
                   <TextInput
                     inputMode="text"
                     placeholder="Пароль"
-                    value={password}
+                    value={state.password}
                     secureTextEntry={isShowPassword}
                     style={{
                       ...styles.input,
@@ -132,7 +150,10 @@ function LoginScreen() {
                     }}
                     onBlur={() => onInputBlur('password')}
                     onSubmitEditing={submit}
-                    onChangeText={setPassword}
+                    onChangeText={value => setState(prev => ({
+                      ...prev,
+                      password: value,
+                    }))}
                   />
                   <TouchableOpacity style={styles.buttonForm} onPress={submit}>
                     <Text style={styles.buttonFormText}>{'Увійти'}</Text>

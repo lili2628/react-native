@@ -1,10 +1,13 @@
 
 import React from "react";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigation } from '@react-navigation/native';
-
 import {
   StyleSheet,
   Text,
+  Image,
   View,
   TextInput,
   ImageBackground,
@@ -14,48 +17,143 @@ import {
   TouchableOpacity,
   Keyboard
 } from 'react-native';
-import Container from '../../components/Container';
-import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
+import { myStorage } from '../../firebase/config.js';
+import { authSignUpUser } from '../../redux/auth/uathOperations.js';
+import Container from '../../components/Container';
 
 
 function RegistrationScreen() {
-  const navigation = useNavigation();
   const imageBg = require('../../images/bg-image.jpg');
+  
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [isShowKeyboard, setIsShowKeyBoard] = useState(false);
   const [isActiveInput, setIsActiveInput] = useState({
     login: false,
     email: false,
     password: false,
   });
+  const initialState = {
+    login: null,
+    email: null,
+    password: null,
+    avatarUri: null,
+  }
   const [isShowPassword, setIsShowPassword] = useState(true);
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [avatarUri, setAvatarUri] = useState("");
+  const [state, setState] = useState({ ...initialState });
+
 
   const hideKeyboard = () => {
     setIsShowKeyBoard(false);
     Keyboard.dismiss();
   };
 
-  const backHome = () => navigation.navigate("Home");
 
-  const validation = () => {
-    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const validation = (email) => {
+   const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
            
     if (reg.test(email) === true) {
-      backHome();
+      return true;
     } else {
       alert('Please, enter email in valid form');
     }
   };
 
-  const submit = () => {
+   const ImageManipulator = async (oldUri, option = [], compressValue) => {
+    try {
+      const { uri } = await manipulateAsync(oldUri, option, {
+        compress: compressValue,
+        format: SaveFormat.JPEG,
+      });
+      return uri;
+    } catch (error) {
+      console.log('Image Manipulator', error);
+    }
+   };
+
+  const pickImage = async () => {
+    try {
+      const { assets, canceled } = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!canceled) {
+        const [{ uri }] = assets;
+        const newUri = await ImageManipulator(
+          uri,
+          [
+            {
+              resize: {
+                height: 240,
+                width: 240,
+              },
+            },
+          ],
+          0.5
+        );
+
+        setState(prev => ({
+          ...prev,
+          avatarUri: newUri,
+        }));
+      } 
+    } catch (error) {
+      alert('Photo Picking is failed');
+      console.log(error.message);
+    }
+  }
+  
+  const uploadPhotoToServer = async () => {
+    const postId = Date.now().toString();
+
+    try {
+      const response = await fetch(state.avatarUri);
+      const photo = await response.blob();
+      const photoRef = ref(myStorage, `userAvatars/${postId}`);
+
+      await uploadBytes(photoRef, photo);
+
+      const link = await getDownloadURL(photoRef);
+
+      return link;
+    } catch (error) {
+      alert('Photo Downloading is failed');
+      console.log(error.message);
+    }
+  }
+
+  const submit = async () => {
     hideKeyboard();
-    validation();
+    const validEmail = validation(state.email);
+
+    if (validEmail) {
+      let photo;
+
+      if (state.avatarUri) {
+        photo = await uploadPhotoToServer();
+      } else {
+        photo = require('../../images/avatar.png');
+      };
+
+      dispatch(authSignUpUser({
+        ...state,
+        photo,
+      })).then(data => {
+            if (data === undefined || !data.uid) {
+              alert('Authorization is faled');
+              console.log(data);
+            }  else {
+              navigation.navigate("Home");
+            }; 
+          });
+      };
   };
     
   const onInputFocus = textInput => {
@@ -73,6 +171,8 @@ function RegistrationScreen() {
   const toggleShowPassword = () => {
     setIsShowPassword(prevState => !prevState);
   };
+
+
 
   return (
     <Container>
@@ -94,9 +194,14 @@ function RegistrationScreen() {
               >
                 <View style={styles.avatarContainer}>
                   <View style={styles.avatarWrp}>
-                  
+                    <Image
+                      source={{ uri: state.avatarUri }}
+                      style={styles.avatarImg}
+                    />
                   </View>
-                  <TouchableOpacity style={styles.buttonAvatar}>
+                  <TouchableOpacity
+                    style={styles.buttonAvatar}
+                    onPress={pickImage}>
                     <Text style={styles.buttonAvatarText}>{'+'}</Text>
                   </TouchableOpacity>
                 </View>
@@ -104,7 +209,7 @@ function RegistrationScreen() {
                 <TextInput
                   inputMode="text"
                   placeholder="Логін"
-                  value={login}
+                  value={state.login}
                   style={{
                     ...styles.input,
                     borderColor: isActiveInput.login ? '#FF6C00' : '#E8E8E8',
@@ -115,12 +220,15 @@ function RegistrationScreen() {
                   }}
                   onBlur={() => onInputBlur('login')}
                   onSubmitEditing={submit}
-                  onChangeText={setLogin}
+                  onChangeText={value => setState(prev => ({
+                    ...prev,
+                    login: value,
+                  }))}
                 />
                 <TextInput
                   inputMode="email"
                   placeholder="Адреса електронної пошти"
-                  value={email}
+                  value={state.email}
                   style={{
                     ...styles.input,
                     borderColor: isActiveInput.email ? '#FF6C00' : '#E8E8E8',
@@ -131,7 +239,10 @@ function RegistrationScreen() {
                   }}
                   onBlur={() => onInputBlur('email')}
                   onSubmitEditing={submit}
-                  onChangeText={setEmail}
+                  onChangeText={value => setState(prev => ({
+                    ...prev,
+                    email: value,
+                  }))}
                 />
                 <View>
                   <TouchableOpacity
@@ -145,7 +256,7 @@ function RegistrationScreen() {
                   <TextInput
                     inputMode="text"
                     placeholder="Пароль"
-                    value={password}
+                    value={state.password}
                     secureTextEntry={isShowPassword}
                     style={{
                       ...styles.input,
@@ -158,7 +269,10 @@ function RegistrationScreen() {
                     }}
                     onBlur={() => onInputBlur('password')}
                     onSubmitEditing={submit}
-                    onChangeText={setPassword}
+                    onChangeText={value => setState(prev => ({
+                      ...prev,
+                      password: value,
+                    }))}
                   />
                   <TouchableOpacity style={styles.buttonForm} onPress={submit}>
                     <Text style={styles.buttonFormText}>{'Увійти'}</Text>
