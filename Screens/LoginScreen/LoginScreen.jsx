@@ -55,9 +55,10 @@ const LoginScreen = () => {
         if (data === undefined || !data.user) {
           alert('Sign In is failed');
           console.log(data);
-        } else {
-          navigation.navigate("Home");
-        };
+        }
+        //else {
+         // navigation.navigate("Home");
+        //};
       });
     };
   };

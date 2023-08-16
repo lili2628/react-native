@@ -1,19 +1,16 @@
 import 'react-native-gesture-handler';
 
 import React from "react";
-import { Provider } from 'react-redux';
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { useEffect } from 'react';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+
 
 import { useFonts } from 'expo-font';
 
 import { store } from './redux/store'; 
-import LoginScreen from './Screens/LoginScreen';
-import Home from './Screens/Home';
-import RegistrationScreen from './Screens/RegistrationScreen';
 
+import Main from './components/Main/Main';
 
-const MainStack = createStackNavigator();
 
 
 const App = () => {
@@ -29,34 +26,12 @@ const App = () => {
   if (!fontsLoaded) {
     return null;
   };
+
+
  
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <MainStack.Navigator initialRouteName="Login">
-          <MainStack.Screen
-            name="Home"
-            component={Home}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="Login"
-            component={LoginScreen} 
-            options={{
-            headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="Registration"
-            component={RegistrationScreen}
-            options={{
-              headerShown: false,
-            }}
-          /> 
-        </MainStack.Navigator>
-      </NavigationContainer>
+     <Main/>
     </Provider>
   );
 };

@@ -142,9 +142,10 @@ const RegistrationScreen = () => {
         if (data === undefined || !data.uid) {
           alert('Authorization is faled');
           console.log(data);
-        } else {
-          navigation.navigate("Home");
-        };
+        }
+        //else {
+         // navigation.navigate("Home");
+       // };
       });
     };
   };

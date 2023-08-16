@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-import { View, Platform, KeyboardAvoidingView, StyleSheet, Image} from 'react-native';
+import { View, Platform, KeyboardAvoidingView, StyleSheet, Image, Keyboard} from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 

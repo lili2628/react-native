@@ -4,35 +4,56 @@ import { createStackNavigator } from '@react-navigation/stack';
 import  CommentsScreen from '../CommentsScreen';
 import MapScreen from '../MapScreen';
 import PostsScreen from '../PostsScreen/PostsScreen';
+import RegistrationScreen from '../RegistrationScreen/RegistrationScreen';
+import LoginScreen from '../LoginScreen/LoginScreen';
+
+const MainStack = createStackNavigator();
 
 
-const NestedScreen = createStackNavigator();
+const useRoute = (isAuth) => {
+  if (!isAuth) {
+    return (
+      <MainStack.Navigator initialRouteName="Login">
+        <MainStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </MainStack.Navigator>
+    );
+  };
 
-
-const Home = ({ navigation, route, options }) => {
   return (
-    <NestedScreen.Navigator initialRouteName="PostsScreen">
-      <NestedScreen.Screen
+    <MainStack.Navigator initialRouteName="PostsScreen">
+      <MainStack.Screen
         name="PostsScreen"
         component={PostsScreen}
         options={{
           headerShown: false,
         }}
       />
-      <NestedScreen.Screen
+      <MainStack.Screen
         name="Map"
         component={MapScreen} 
         options={{title: ''}}
       />
-    <NestedScreen.Screen
+    <MainStack.Screen
         name="Comments"
         component={CommentsScreen} 
         options={{title: ''}}
     />
-    </NestedScreen.Navigator>
+    </MainStack.Navigator>
   );
 };
 
 
-
-export default Home;
+export default useRoute;

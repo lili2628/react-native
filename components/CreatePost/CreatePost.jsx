@@ -55,7 +55,6 @@ const CreatePost  = ({ navigation }) => {
   const avatar = useSelector(selectStateAvatar);
   const login = useSelector(selectStateLogin);
 
-  console.log('data', userId, avatar, login);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
