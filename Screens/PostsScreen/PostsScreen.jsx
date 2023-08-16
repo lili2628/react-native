@@ -1,12 +1,17 @@
 import React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { View, StyleSheet } from "react-native";
+
+import { AntDesign, Feather } from '@expo/vector-icons';
+
 import CreatePostsScreen from '../CreatePostsScreen';
 import ProfileScreen from '../ProfileScreen';
-import { AntDesign, Feather } from '@expo/vector-icons';
 import DefaultPostsScreen from "../DefaultPostsScreen";
 
+
 const Tabs = createBottomTabNavigator();
+
 
 const screenOptions = ({ navigation, route }) => ({
   headerLeft: () => (
@@ -165,7 +170,7 @@ const styles = StyleSheet.create({
     activeFill: '#FFFFFF',
     inActiveFill: '#212121',
   },
-   exitBtn: {
+  exitBtn: {
     color: '#BDBDBD',
   },
 });

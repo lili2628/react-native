@@ -1,25 +1,49 @@
+import { useState, useEffect } from 'react';
 
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-const Post = ({ post, navigation}) => {
+import { Feather } from '@expo/vector-icons';
+
+import { collection, getCountFromServer } from 'firebase/firestore';
+
+import { db } from '../../firebase/config.js';
+
+
+
+const Post = ({ post, navigation, route }) => {
+  const [numberOfComments, setNumberOfComments] = useState(0);
+
+  useEffect(() => {
+    try {
+      const checkNumber = async () => {
+        const dbRef = collection(db, 'posts', post.id, 'comments');
+
+        const snapshot = await getCountFromServer(dbRef);
+
+        setNumberOfComments(snapshot.data().count);
+      };
+      checkNumber();
+    } catch (error) {
+      console.log('nomber of comments', error.message);
+    }
+  }, [post]);
  
   const selectTitleLocation = ({ location }) => {
     if (location.title) {
       return location.title;
-    }
+    };
 
     if (location.postAddress.city && !location.postAddress.street) {
       return `${location.postAddress.city}`;
-    }
+    };
 
     if (location.postAddress.city && location.postAddress.street) {
       return `${location.postAddress.city}, ${location.postAddress.street}`;
-    }
+    };
 
     return 'невідомо';
   };
@@ -28,6 +52,11 @@ const Post = ({ post, navigation}) => {
     <View style={styles.postWrp}>
       <Image source={{ uri: post.photoUri }} style={styles.photo} />
       <View style={styles.bottomInfo}>
+        {route?.name !== 'Profile' && (
+          <View style={styles.owner}>
+            <Image source={{ uri: post.owner.avatar }} style={styles.avatar} />
+          </View>
+        )}
         
         <View style={styles.desc}>
           <Text style={styles.titlePost} ellipsizeMode="tail" numberOfLines={1}>
@@ -46,7 +75,7 @@ const Post = ({ post, navigation}) => {
                   color={styles.commentsIcon.fill}
                 />
               </View>
-              <Text style={styles.commentsCount}>count com</Text>
+              <Text style={styles.commentsCount}>{ numberOfComments }</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

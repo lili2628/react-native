@@ -1,10 +1,12 @@
 
 import React from 'react';
+
 import { View, StyleSheet } from 'react-native';
+
 import CreatePost from '../../components/CreatePost';
 
 
-function CreatePostsScreen  ({ navigation }) {
+const CreatePostsScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <CreatePost navigation={navigation} />

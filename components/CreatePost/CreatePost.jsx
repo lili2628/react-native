@@ -1,30 +1,27 @@
-import {
-  Alert,
-  View,
-  Image,
-  Text,
-  Button,
-  TouchableOpacity,
-  TextInput,
-  Keyboard,
-  Platform,
-  StyleSheet, 
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-} from 'react-native';
-import { MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
+import { Alert, View, Image, Text, TouchableOpacity, TextInput, Keyboard, Platform, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useState, useEffect, useRef } from 'react';
-import Container from '../Container/Container';
-import { Camera, CameraType } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
+
+import { MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { Camera, CameraType } from 'expo-camera';
+
+import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+
+import { selectStateUserId, selectStateAvatar, selectStateLogin} from '../../redux/selectors';
+import { db, myStorage } from '../../firebase/config.js';
+import Container from '../Container/Container';
 import ModalWrap from '../ModalWrap/ModalWrap';
+
 
 const INITIAL_POST = {
   photoUri: '',
@@ -37,7 +34,7 @@ const INITIAL_POST = {
 };
 
 
-function CreatePost  ({ navigation }) {
+const CreatePost  = ({ navigation }) => {
   const [isActiveInput, setIsActiveInput] = useState({
     title: false,
     location: false,
@@ -54,11 +51,18 @@ function CreatePost  ({ navigation }) {
   const isFocused = useIsFocused();
   const cameraRef = useRef();
 
+  const userId = useSelector(selectStateUserId);
+  const avatar = useSelector(selectStateAvatar);
+  const login = useSelector(selectStateLogin);
+
+  console.log('data', userId, avatar, login);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       setState(INITIAL_POST);
       setIsDirtyForm(false);
     });
+
     return unsubscribe;
   }, []);
 
@@ -78,7 +82,7 @@ function CreatePost  ({ navigation }) {
     } catch (error) {
       console.log('Image Manipulator', error);
     }
-};
+  };
 
   useEffect(() => {
     if (!isFocused){
@@ -90,7 +94,7 @@ function CreatePost  ({ navigation }) {
         const { status } = await Camera.requestCameraPermissionsAsync();
 
         if (status !== 'granted') {
-          Alert.alert('Sorry, we need permissions to camera');
+          alert('Sorry, we need permissions to camera');
           return;
         }
       } catch (error) {
@@ -101,7 +105,7 @@ function CreatePost  ({ navigation }) {
         const { status } = await Location.requestForegroundPermissionsAsync();
 
         if (status !== 'granted') {
-          Alert.alert('Sorry, we need permissions to location');
+          alert('Sorry, we need permissions to location');
           return;
         }
         const {
@@ -127,7 +131,7 @@ function CreatePost  ({ navigation }) {
             await ImagePicker.requestMediaLibraryPermissionsAsync();
 
           if (status !== 'granted') {
-            Alert.alert('Sorry, we need permissions to library');
+            alert('Sorry, we need permissions to library');
           }
         }
       } catch (error) {
@@ -303,11 +307,57 @@ function CreatePost  ({ navigation }) {
   };
   
 
-  const postPhoto = () => {
-    navigation.navigate("DefaultPostsScreen", { state });
+  const uploadPostToServer = async () => {
+    const postId = Date.now().toString();
+
+    try {
+      const response = await fetch(state.photoUri);
+      const photo = await response.blob();
+      const photoRef = ref(myStorage, `postImages/${postId}`);
+
+      await uploadBytes(photoRef, photo);
+
+      const link = await getDownloadURL(photoRef);
+
+      return link;
+    } catch (error) {
+      alert('Photo Downloading is failed');
+      console.log(error.message);
+    }
+    
   };
 
-  return (
+  const postPhoto = async () => {
+    hideKeyboard();
+
+    const postId = Date.now().toString();
+
+    try {
+      const photo = await uploadPostToServer();
+      const postRef = doc(db, 'posts', postId);
+
+      await setDoc(postRef, {
+        photo,
+        titlePost: state.titlePost ? state.titlePost : 'без назви',
+        location: state.location,
+        createdAt: Timestamp.fromDate(new Date()),
+        updateAt: Timestamp.fromDate(new Date()),
+        owner: {
+          userId,
+          login,
+          avatar,
+        },
+      });
+    } catch (error) {
+      Alert.alert('post did not save on server', error.message);
+    } finally {
+      setState(INITIAL_POST);
+      setIsDirtyForm(false);
+      navigation.navigate("DefaultPostsScreen", { state });
+    }
+  };
+
+  return ( 
     <Container>
       <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
         <KeyboardAvoidingView

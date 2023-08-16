@@ -1,14 +1,15 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import  CommentsScreen from '../CommentsScreen';
 import MapScreen from '../MapScreen';
 import PostsScreen from '../PostsScreen/PostsScreen';
 
 
-
 const NestedScreen = createStackNavigator();
 
-function Home  ({ navigation, route, options }) {
+
+const Home = ({ navigation, route, options }) => {
   return (
     <NestedScreen.Navigator initialRouteName="PostsScreen">
       <NestedScreen.Screen
@@ -17,20 +18,19 @@ function Home  ({ navigation, route, options }) {
         options={{
           headerShown: false,
         }}
-       />
+      />
       <NestedScreen.Screen
-       name="Map"
+        name="Map"
         component={MapScreen} 
         options={{title: ''}}
       />
-     <NestedScreen.Screen
+    <NestedScreen.Screen
         name="Comments"
         component={CommentsScreen} 
         options={{title: ''}}
     />
     </NestedScreen.Navigator>
   );
-    
 };
 
 

@@ -1,63 +1,82 @@
 import React from "react";
-import { View, FlatList, StyleSheet } from 'react-native';
-import Container from '../../components/Container';
-import Post from '../../components/Post';
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { View, FlatList, StyleSheet} from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+
 import { Feather } from '@expo/vector-icons';
 
+import { collection, onSnapshot } from 'firebase/firestore';
+
+import Container from '../../components/Container';
+import Post from '../../components/Post';
+import { selectorStateComment } from '../../redux/selectors.js';
+import { db } from '../../firebase/config.js';
+import { authSignOutUser } from '../../redux/auth/uathOperations.js';
 
 
-const DefaultPostsScreen = ({ navigation, route }) =>  {
+const DefaultPostsScreen = ({ navigation, route }) => {
+  
+  const dispatch = useDispatch();
   
   const [posts, setPosts] = useState([]);
 
- 
-  useEffect(() => {
-    if (route.params) {
-      console.log(route.params);
-    
-      setPosts(prevState => [...prevState, route.params.state]);
-      console.log(posts);
-    };
-  }, [route.params]);
+  const comment = useSelector(selectorStateComment);
 
   useEffect(() => {
-  navigation.setOptions({
-      title: 'Публікації',
-      headerRight: () => (
-        <Feather
-          name="log-out"
-          size={24}
-          color={styles.exitBtn.color}
-          style={styles.exitBtn}
-          onPress={() => navigation.navigate('Login')}
-        />),  
-      headerLeft: () => { },
-  });
-}, [navigation]);
+    const dbRef = collection(db, 'posts');
+
+    onSnapshot(
+      dbRef,
+      data => {
+        const posts = data.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const reversPosts = posts.reverse();
+
+        setPosts(reversPosts);
+      },
+      () => { }
+    );
+
+    navigation.setOptions({
+        title: 'Публікації',
+        headerRight: () => (
+          <Feather
+            name="log-out"
+            size={24}
+            color={styles.exitBtn.color}
+            style={styles.exitBtn}
+            onPress={
+              () => {
+                navigation.navigate('Login'),
+                dispatch(authSignOutUser())
+              }
+            }
+          />),  
+        headerLeft: () => { },
+    });
+}, [navigation, comment]);
 
   return (
-  <>
-      
-       
-      
-
-      <Container>
-         <View style={styles.avatarContainer}>
-                <View style={styles.avatarWrp}>
-                </View>
-         </View>
-        <View style={styles.containerList}>
-          <FlatList  data={posts}
-              keyExtractor={(item, indx) => indx.toString()}
-              renderItem={({ item }) => <Post post={item} navigation={navigation} />}
-          />
-        </View>
-      </Container>
-   </>
+    <>
+        <Container>
+          <View style={styles.avatarContainer}>
+                  <View style={styles.avatarWrp}>
+                  </View>
+          </View>
+          <View style={styles.containerList}>
+            <FlatList  data={posts}
+                keyExtractor={(item, indx) => indx.toString()}
+                renderItem={({ item }) => <Post post={item} navigation={navigation} />}
+            />
+          </View>
+        </Container>
+    </>
   );
 };
 

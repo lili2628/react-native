@@ -1,35 +1,140 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ImageBackground,
-  Image,
-  Alert,
-  StyleSheet 
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import ProfileList from '../../components/ProfileList';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import Container from "../../components/Container";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-function ProfileScreen ({ navigation, route }) {
+import { View, Text, TouchableOpacity, ImageBackground, Image, StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
+import { Feather } from '@expo/vector-icons';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
+
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+
+import ProfileList from '../../components/ProfileList';
+import Container from '../../components/Container';
+import { authUpdateUser } from '../../redux/auth/uathOperations.js';
+import { selectStateUserId, selectStateLogin, selectStateAvatar, selectorStateComment} from '../../redux/selectors.js';
+import { myStorage, db } from '../../firebase/config.js';
+import { authSignOutUser } from '../../redux/auth/uathOperations.js';
+
+
+const ImageManipulator = async (oldUri, option = [], compressValue) => {
+  try {
+    const { uri } = await manipulateAsync(oldUri, option, {
+      compress: compressValue,
+      format: SaveFormat.JPEG,
+    });
+    return uri;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+const ProfileScreen = ({ navigation, route }) => {
   const imageBg = require('../../images/bg-image.jpg');
+
+  const [posts, setPosts] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const userId = useSelector(selectStateUserId);
+  const login = useSelector(selectStateLogin);
+  const avatar = useSelector(selectStateAvatar);
+  const comment = useSelector(selectorStateComment);
+
+  useEffect(() => {
+    const dbRef = collection(db, 'posts');
+    const myQuery = query(dbRef, where('owner.userId', '==', userId));
+
+    onSnapshot(
+      myQuery,
+      querySnapshot => {
+        const posts = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        const reversPosts = posts.reverse();
+
+        setPosts(reversPosts);
+      },
+      () => { }
+    );
+  }, [userId, comment]);
+
+
+  const pickImage = async () => {
+    try {
+      const { assets, canceled } = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!canceled) {
+        const [{ uri }] = assets;
+
+        const newUri = await ImageManipulator(
+          uri,
+          [
+            {
+              resize: { height: 240, width: 240 },
+            },
+          ],
+          0.5
+        );
+
+        return newUri;
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const uploadPhotoToServer = async (photo) => {
+    const postId = Date.now().toString();
+
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const imageRef = ref(myStorage, `userAvatars/${postId}`);
+
+      await uploadBytes(imageRef, file);
+
+      return await getDownloadURL(imageRef);
+    } catch (error) {
+      alert('Photo Downloading is failed');
+      console.log(error.message);
+    }
+  };
+
+  const changeAvatar = async () => {
+    const avatarUri = await pickImage();
+    const avatarURL = await uploadPhotoToServer(avatarUri);
+
+    if (avatarURL) {
+      dispatch(authUpdateUser({ avatarURL }));
+
+      alert('Вітаємо! Аватар змінено');
+    };
+  };
 
   return (
     <Container>
       <ImageBackground source={imageBg} style={styles.imageBg}>
         <View style={styles.container}>
           <View style={styles.myPostsContainer}>
+            
             <View style={styles.avatarContainer}>
               <View style={styles.avatarWrp}>
+                  <Image source={{ uri: avatar }} style={styles.avatarImg} />
               </View>
 
-              <TouchableOpacity
-                style={styles.buttonAvatar}
-              >
+              <TouchableOpacity style={styles.buttonAvatar} onPress={changeAvatar}>
                 <Text style={styles.buttonAvatarText}>{'+'}</Text>
               </TouchableOpacity>
             </View>
@@ -39,21 +144,24 @@ function ProfileScreen ({ navigation, route }) {
                 name="log-out"
                 size={24}
                 color={styles.exitBtn.color}
-                onPress={() => navigation.navigate('Login')}
+                onPress={() => {
+                  navigation.navigate('Login');
+                  dispatch(authSignOutUser())
+                }}
               />
             </View>
 
-            <Text style={styles.login}>login</Text>
+            <Text style={styles.login}>{login}</Text>
+            <Text style={styles.count}>Всього публікацій: {posts.length}</Text>
             
-            <ProfileList navigation={navigation} route={route} />
-          
+            <ProfileList posts={posts} navigation={navigation} route={route} />
+            
           </View>
         </View>
       </ImageBackground>
     </Container>
   );
 };
-
 
 
 const styles = StyleSheet.create({
@@ -129,7 +237,6 @@ const styles = StyleSheet.create({
     color: '#BDBDBD',
   },
 });
-
 
 
 export default ProfileScreen;

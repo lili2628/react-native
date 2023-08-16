@@ -1,8 +1,10 @@
 import 'react-native-gesture-handler';
+
 import React from "react";
 import { Provider } from 'react-redux';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+
 import { useFonts } from 'expo-font';
 
 import { store } from './redux/store'; 
@@ -14,7 +16,7 @@ import RegistrationScreen from './Screens/RegistrationScreen';
 const MainStack = createStackNavigator();
 
 
-export default function App() {
+const App = () => {
 
    const [fontsLoaded] = useFonts({
      'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
@@ -24,7 +26,6 @@ export default function App() {
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
    });
   
-
   if (!fontsLoaded) {
     return null;
   };
@@ -60,3 +61,4 @@ export default function App() {
   );
 };
 
+export default App;

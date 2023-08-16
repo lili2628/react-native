@@ -1,36 +1,28 @@
-
 import React from "react";
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigation } from '@react-navigation/native';
-import {
-  StyleSheet,
-  Text,
-  Image,
-  View,
-  TextInput,
-  ImageBackground,
-  Platform,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Keyboard
-} from 'react-native';
+
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+import { StyleSheet, Text, Image, View, TextInput, ImageBackground, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Keyboard } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import { myStorage } from '../../firebase/config.js';
 import { authSignUpUser } from '../../redux/auth/uathOperations.js';
 import Container from '../../components/Container';
 
 
-function RegistrationScreen() {
+const RegistrationScreen = () => {
   const imageBg = require('../../images/bg-image.jpg');
   
   const navigation = useNavigation();
+
   const dispatch = useDispatch();
+
   const [isShowKeyboard, setIsShowKeyBoard] = useState(false);
   const [isActiveInput, setIsActiveInput] = useState({
     login: false,
@@ -52,10 +44,9 @@ function RegistrationScreen() {
     Keyboard.dismiss();
   };
 
-
   const validation = (email) => {
-   const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-           
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          
     if (reg.test(email) === true) {
       return true;
     } else {
@@ -63,17 +54,18 @@ function RegistrationScreen() {
     }
   };
 
-   const ImageManipulator = async (oldUri, option = [], compressValue) => {
+  const ImageManipulator = async (oldUri, option = [], compressValue) => {
     try {
       const { uri } = await manipulateAsync(oldUri, option, {
         compress: compressValue,
         format: SaveFormat.JPEG,
       });
+
       return uri;
     } catch (error) {
       console.log('Image Manipulator', error);
     }
-   };
+  };
 
   const pickImage = async () => {
     try {
@@ -103,12 +95,12 @@ function RegistrationScreen() {
           ...prev,
           avatarUri: newUri,
         }));
-      } 
+      }
     } catch (error) {
       alert('Photo Picking is failed');
       console.log(error.message);
     }
-  }
+  };
   
   const uploadPhotoToServer = async () => {
     const postId = Date.now().toString();
@@ -127,10 +119,11 @@ function RegistrationScreen() {
       alert('Photo Downloading is failed');
       console.log(error.message);
     }
-  }
+  };
 
   const submit = async () => {
     hideKeyboard();
+
     const validEmail = validation(state.email);
 
     if (validEmail) {
@@ -146,14 +139,14 @@ function RegistrationScreen() {
         ...state,
         photo,
       })).then(data => {
-            if (data === undefined || !data.uid) {
-              alert('Authorization is faled');
-              console.log(data);
-            }  else {
-              navigation.navigate("Home");
-            }; 
-          });
-      };
+        if (data === undefined || !data.uid) {
+          alert('Authorization is faled');
+          console.log(data);
+        } else {
+          navigation.navigate("Home");
+        };
+      });
+    };
   };
     
   const onInputFocus = textInput => {
@@ -171,8 +164,6 @@ function RegistrationScreen() {
   const toggleShowPassword = () => {
     setIsShowPassword(prevState => !prevState);
   };
-
-
 
   return (
     <Container>
@@ -287,7 +278,7 @@ function RegistrationScreen() {
                     <Text
                       style={styles.link_register}
                       onPress={() => navigation.navigate('Login')} >
-                        Увійти
+                      Увійти
                     </Text>
                   </Text>
                 </View>
@@ -298,7 +289,7 @@ function RegistrationScreen() {
       </TouchableWithoutFeedback>
     </Container>
   );
-}
+};
 
 const styles = StyleSheet.create({
   wrapper: {

@@ -2,28 +2,21 @@ import React from "react";
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  ImageBackground,
-  Platform,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Keyboard
-} from 'react-native';
+
+import {StyleSheet, Text, View, TextInput, ImageBackground, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Keyboard} from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import Container from '../../components/Container';
 import { authSignInUser } from '../../redux/auth/uathOperations.js';
 
-function LoginScreen() {
+
+const LoginScreen = () => {
   const imageBg = require('../../images/bg-image.jpg');
   
   const navigation = useNavigation();
+
   const dispatch = useDispatch();
+
   const [isShowKeyboard, setIsShowKeyBoard] = useState(false);
   const [isActiveInput, setIsActiveInput] = useState({
     email: false,
@@ -34,14 +27,13 @@ function LoginScreen() {
     email: '',
     password: '',
   };
-  const [state, setState] = useState({...initialState});
+  const [state, setState] = useState({ ...initialState });
   
 
   const hideKeyboard = () => {
     setIsShowKeyBoard(false);
     Keyboard.dismiss();
   };
-
 
   const validation = (email) => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -65,10 +57,9 @@ function LoginScreen() {
           console.log(data);
         } else {
           navigation.navigate("Home");
-        }; 
+        };
       });
     };
-
   };
     
   const onInputFocus = textInput => {
@@ -179,7 +170,7 @@ function LoginScreen() {
       </TouchableWithoutFeedback>
     </Container>
   );
-}
+};
 
 const styles = StyleSheet.create({
   wrapper: {

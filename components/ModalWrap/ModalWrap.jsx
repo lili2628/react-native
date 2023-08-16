@@ -1,19 +1,17 @@
 import { useState } from 'react';
+
 import { Modal, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { AntDesign } from '@expo/vector-icons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-const ModalWrap = ({
-  title,
-  location,
-  modalVisible,
-  setModalVisible,
-  draggableMarker,
-}) => {
+import { AntDesign } from '@expo/vector-icons';
+
+
+const ModalWrap = ({ title, location, modalVisible, setModalVisible, draggableMarker }) => {
+  
   const [draggableMarkerCoords, setDraggableMarkerCoords] = useState(location);
   const [isMoveMarker, setIsMoveMarker] = useState(false);
 
