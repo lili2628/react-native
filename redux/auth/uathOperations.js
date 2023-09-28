@@ -62,7 +62,7 @@ export const authUpdateUser = ({ avatarURL }) =>
             const user = auth.currentUser;
 
             await updateProfile(user, {
-                photoURL1: avatarURL,
+                photoURL: avatarURL,
             });
 
             const {

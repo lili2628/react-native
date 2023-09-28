@@ -28,7 +28,7 @@ const Post = ({ post, navigation, route }) => {
       };
       checkNumber();
     } catch (error) {
-      console.log('nomber of comments', error.message);
+      console.log('Number of comments', error.message);
     }
   }, [post]);
  
@@ -48,9 +48,10 @@ const Post = ({ post, navigation, route }) => {
     return 'невідомо';
   };
 
+
   return (
     <View style={styles.postWrp}>
-      <Image source={{ uri: post.photoUri }} style={styles.photo} />
+      <Image source={{ uri: post.photo }} style={styles.photo} />
       <View style={styles.bottomInfo}>
         {route?.name !== 'Profile' && (
           <View style={styles.owner}>

@@ -26,6 +26,8 @@ const ImageManipulator = async (oldUri, option = [], compressValue) => {
       compress: compressValue,
       format: SaveFormat.JPEG,
     });
+
+    console.log(uri);
     return uri;
   } catch (error) {
     console.log(error.message);
@@ -91,7 +93,7 @@ const ProfileScreen = ({ navigation, route }) => {
         return newUri;
       }
     } catch (error) {
-      console.log(error.message);
+      console.log("error in ProfileScreen in pickImage", error.message);
     }
   };
 
@@ -115,6 +117,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const changeAvatar = async () => {
     const avatarUri = await pickImage();
     const avatarURL = await uploadPhotoToServer(avatarUri);
+
 
     if (avatarURL) {
       dispatch(authUpdateUser({ avatarURL }));

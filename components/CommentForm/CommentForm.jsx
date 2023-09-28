@@ -21,6 +21,7 @@ const CommentForm = ({ postId, isShowKeyboard, setIsShowKeyboard, hideKeyboard }
   const login = useSelector(selectStateLogin);
   const avatar = useSelector(selectStateAvatar);
 
+
   const [myComment, setMyComment] = useState('');
   const [isActiveInput, setIsActiveInput] = useState(false);
 

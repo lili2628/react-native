@@ -132,15 +132,17 @@ const RegistrationScreen = () => {
       if (state.avatarUri) {
         photo = await uploadPhotoToServer();
       } else {
-        photo = require('../../images/avatar.png');
+        photo = "https://robohash.org/1a1e2c60b53334f267dc4c8cb3997b5c?set=set4&bgset=&size=400x400";
       };
+
+      console.log("registration avatar", photo);
 
       dispatch(authSignUpUser({
         ...state,
         photo,
       })).then(data => {
         if (data === undefined || !data.uid) {
-          alert('Authorization is faled');
+          alert('Authorization fails');
           console.log(data);
         }
         //else {
