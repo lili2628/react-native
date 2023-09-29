@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   avatarContainer: {
-    display: 'inline-block',
     borderRadius: 16,
     marginTop: 20,
     marginBottom: 20,

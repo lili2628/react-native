@@ -44,7 +44,7 @@ const CommentsScreen = ({ navigation, route }) => {
           size={24}
           color={styles.headerBackBtn}
           onPress={() => {
-            navigation.goBack();
+            navigation.navigate("DefaultPostsScreen");
           }}
         />
       ),  

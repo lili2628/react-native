@@ -41,7 +41,7 @@ const Comments = ({ allComments, photo }) => {
                         </View>
                         <View style={myLogin === item.owner.login 
                             ? { ...styles.commentWrp}
-                            : {...styles.commentWrp, borderRadius: "0px, 6px, 6px, 6px"}}>
+                            : {...styles.commentWrp}}>
                             <Text style={styles.comment}>{item.comment}</Text>
                             <Text style={styles.date}>{dateConverter(item.createdAt)}</Text>
                         </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   commentWrp: {
     flex: 10,
     padding: 4,
-    borderRadius: "6px, 0px, 6px, 6px",
+    borderRadius: 6,
     backgroundColor: "rgba(0,0,0,0.03)",
   },
   avatarWrp: {
