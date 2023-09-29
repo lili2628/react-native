@@ -97,7 +97,7 @@ const CommentForm = ({ postId, isShowKeyboard, setIsShowKeyboard, hideKeyboard }
       >
         <FontAwesome
           name="send"
-          size={24}
+          size={16}
           color={
             !myComment ? styles.buttonForm.fill : styles.activeButtonForm.fill
           }
@@ -111,36 +111,44 @@ const styles = StyleSheet.create({
   container: {},
   formWrp: {
     position: 'absolute',
-    bottom: 0,
-    paddingBottom: hp('2%'),
+    bottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: "center",
     backgroundColor: '#F6F6F6',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
   },
   input: {
-    flex: 4,
+    flex: 6,
     paddingTop: 4,
-    paddingLeft: 4,
+    paddingLeft: 20,
     paddingBottom: 4,
+    alignItems: "center",
     height: 50,
     fontFamily: 'Roboto-Regular',
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '400',
     color: '#212121',
     backgroundColor: '#F6F6F6',
-    borderBottomWidth: 1,
+   
   },
   buttonForm: {
+    borderColor: "#E8E8E8",
+    border: 1,
+    borderRadius: 100,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 100,
     backgroundColor: '#F6F6F6',
     fill: '#BDBDBD',
   },
   activeButtonForm: {
     backgroundColor: '#FF6C00',
     fill: '#fff',
+    borderRadius: 100,
+    height: 50,
   },
 });
 

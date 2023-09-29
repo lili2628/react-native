@@ -39,7 +39,9 @@ const Comments = ({ allComments, photo }) => {
                         <View style={styles.avatarWrp}>
                             <Image source={{ uri: item.owner.avatar }} style={styles.avatar} />
                         </View>
-                        <View style={styles.commentWrp}>
+                        <View style={myLogin === item.owner.login 
+                            ? { ...styles.commentWrp}
+                            : {...styles.commentWrp, borderRadius: "0px, 6px, 6px, 6px"}}>
                             <Text style={styles.comment}>{item.comment}</Text>
                             <Text style={styles.date}>{dateConverter(item.createdAt)}</Text>
                         </View>
@@ -63,6 +65,7 @@ const styles = StyleSheet.create({
     marginBottom: hp('0.96%'),
     borderRadius: 8,
     borderColor: '#E8E8E8',
+    
     },
   containerComment: {
     flexDirection: 'row-reverse',
@@ -72,15 +75,8 @@ const styles = StyleSheet.create({
   commentWrp: {
     flex: 10,
     padding: 4,
-    shadowColor: '#000000',
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    shadowOffset: {
-      height: 1,
-      width: 1,
-    },
-    borderRadius: 10,
-    backgroundColor: '#F6F6F6',
+    borderRadius: "6px, 0px, 6px, 6px",
+    backgroundColor: "rgba(0,0,0,0.03)",
   },
   avatarWrp: {
     flex: 1.4,
@@ -95,7 +91,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     borderRadius: 50,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   login: {

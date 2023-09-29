@@ -7,8 +7,9 @@ import {
 } from 'react-native-responsive-screen';
 
 import { Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
-import { collection, getCountFromServer } from 'firebase/firestore';
+import { collection, getCountFromServer, onSnapshot, getDocs, updateDoc, doc, getDoc  } from 'firebase/firestore';
 
 import { db } from '../../firebase/config.js';
 
@@ -48,6 +49,21 @@ const Post = ({ post, navigation, route }) => {
     return 'невідомо';
   };
 
+  const onLikePressed = async (postId) => {
+    try {
+        const postRef = doc(db, "posts", postId);
+        const postSnapshot = await getDoc(postRef);
+        const postLikes = postSnapshot.data().likes;
+        const updatedLikes = Number(postLikes + 1);
+    
+        await updateDoc(postRef, {
+          likes: updatedLikes,
+        });
+      } catch (error) {
+        console.error("Error adding like:", error);
+      }
+   };
+
 
   return (
     <View style={styles.postWrp}>
@@ -64,20 +80,33 @@ const Post = ({ post, navigation, route }) => {
             {post.titlePost}
           </Text>
           
-          <View style={styles.buttonsWrp}>
-            <TouchableOpacity
-              style={styles.buttonComments}
-              onPress={() => navigation.navigate('Comments', post)}
-            >
-              <View style={styles.commentsIcon}>
-                <Feather
-                  name="message-circle"
-                  size={24}
-                  color={styles.commentsIcon.fill}
-                />
-              </View>
-              <Text style={styles.commentsCount}>{ numberOfComments }</Text>
-            </TouchableOpacity>
+          <View style={styles.information}>
+            <View style={styles.buttonsWrp}>
+              <TouchableOpacity
+                style={styles.buttonComments}
+                onPress={() => navigation.navigate('Comments', post)}
+              >
+                <View style={numberOfComments ? styles.commentsIconIs : styles.commentsIcon}>
+                  <Feather
+                    name="message-circle"
+                    size={24}
+                    color={numberOfComments !== 0 ? '#FF6C00' : "#BDBDBD"}
+                  />
+                </View>
+                <Text style={numberOfComments ? styles.commentsCountIs : styles.commentsCount}>{ numberOfComments }</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={{...styles.button, marginLeft: 4}}
+                onPress={() => onLikePressed(post.id)}
+                >
+                  <View style={styles.likes}>
+                    <AntDesign name="like2" size={22} color={post.likes !== 0 ? '#FF6C00' : "#BDBDBD"} /> 
+                  </View>
+                  <Text style={post.likes ? styles.commentsCountIs : styles.commentsCount}>{ post.likes }</Text>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
               style={styles.buttonLocation}
@@ -128,7 +157,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     borderRadius: 50,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   desc: {},
@@ -142,27 +170,44 @@ const styles = StyleSheet.create({
   },
   buttonsWrp: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    
+  },
+  information: {
+    flexDirection: 'row',
     width: wp('75%'),
   },
   buttonComments: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 40,
+    marginRight: 20,
   },
   commentsIcon: {
     marginRight: hp('0.6%'),
     transform: [{ rotate: '-90deg' }],
     fill: '#BDBDBD',
   },
+  commentsIconIs: {
+    marginRight: hp('0.6%'),
+    transform: [{ rotate: '-90deg' }],
+    fill: '#FF6C00',
+  },
+  likes: {
+    marginRight: 5,
+  },
   commentsCount: {
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     color: '#BDBDBD',
   },
+  commentsCountIs: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    color: '#000000',
+  },
   buttonLocation: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginLeft: 90,
   },
   mapIcon: {
     marginRight: hp('0.6%'),
@@ -176,6 +221,11 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     color: '#212121',
   },
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+},
 });
 
 export default Post;

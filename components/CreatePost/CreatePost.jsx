@@ -339,6 +339,7 @@ const CreatePost  = ({ navigation }) => {
         photo,
         titlePost: state.titlePost ? state.titlePost : 'без назви',
         location: state.location,
+        likes: 0,
         createdAt: Timestamp.fromDate(new Date()),
         updateAt: Timestamp.fromDate(new Date()),
         owner: {
@@ -357,13 +358,14 @@ const CreatePost  = ({ navigation }) => {
   };
 
   return ( 
-    <Container>
+    <Container style={styles.containerMain}>
       <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
         <KeyboardAvoidingView
           style={styles.wrapper}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
           <View style={styles.container}>
+
             <View style={styles.cameraWrp}>
               <Camera
                 style={
@@ -491,56 +493,55 @@ const CreatePost  = ({ navigation }) => {
                   />
                 )}
               </View>
+
             </View>
+
           </View>
 
-          <View
-            style={
-              !isShowKeyboard
-                ? { ...styles.buttonsWrp }
-                : {
-                    ...styles.buttonsWrp,
-                    flexDirection: 'row-reverse',
-                    marginTop: hp('5%'),
-                  }
-            }
-          >
-            <TouchableOpacity
-              style={styleSendBtn}
-              disabled={!state.photoUri}
-              onPress={postPhoto}
-            >
-              <Text
-                style={
-                  !state.photoUri
-                  ? styles.buttonFormText
-                  : { ...styles.buttonFormText, ...styles.activeButtonFormText }
-                }
+          <View style={styles.buttonsWrp}>
+
+            <View>
+              <TouchableOpacity
+                style={styleSendBtn}
+                disabled={!state.photoUri}
+                onPress={postPhoto}
               >
-                Опублікувати
-              </Text> 
-            </TouchableOpacity>
+                <Text
+                  style={
+                    !state.photoUri
+                    ? styles.buttonFormText
+                    : { ...styles.buttonFormText, ...styles.activeButtonFormText }
+                  }
+                >
+                  Опублікувати
+                </Text> 
+              </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity
-              style={styleRemoveBtn}
-              onPress={() => {
-                setState(INITIAL_POST);
-                setIsDirtyForm(false);
-                hideKeyboard();
-              }}
-              disabled={!state.photoUri}
-            >
-              <AntDesign
-                name="delete"
-                size={24}
-                color={
-                  !state.photoUri
-                  ? styles.removeBtn.fill
-                  : styles.activeRemoveBtn.fill
-                }
-              />
-            </TouchableOpacity>
+            <View>
+              <TouchableOpacity
+                style={styleRemoveBtn}
+                onPress={() => {
+                  setState(INITIAL_POST);
+                  setIsDirtyForm(false);
+                  hideKeyboard();
+                }}
+                disabled={!state.photoUri}
+              >
+                <AntDesign
+                  name="delete"
+                  size={24}
+                  color={
+                    !state.photoUri
+                    ? styles.removeBtn.fill
+                    : styles.activeRemoveBtn.fill
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+
           </View>
+
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </Container>
@@ -549,16 +550,17 @@ const CreatePost  = ({ navigation }) => {
 
 
 const styles = StyleSheet.create({
+  containerMain: {
+    backgroundColor: "#FFFFFF",
+  },
   wrapper: {
     flex: 1,
-  },
-  permission: {
-    flex: 1,
-    justifyContent: 'center',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "flex-start",
   },
   container: {
-    flex: 2,
     marginTop: hp('3.8%'),
+    marginBottom: 15,
   },
   cameraWrp: {
     borderWidth: 1,
@@ -598,7 +600,6 @@ const styles = StyleSheet.create({
   buttonGalleryText: {
     marginTop: hp('0.96%'),
     fontSize: 16,
-
     color: '#BDBDBD',
   },
   input: {
@@ -624,9 +625,12 @@ const styles = StyleSheet.create({
   locationIcon: {
     fill: '#BDBDBD',
   },
+
   buttonsWrp: {
     flex: 1,
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   buttonForm: {
     height: hp('6.12%'),
@@ -639,7 +643,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6C00',
   },
   changedButtonForm: {
-    width: wp('50%'),
+    width: wp('90%'),
   },
   buttonFormText: {
     alignItems: 'center',
@@ -651,19 +655,20 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   removeBtn: {
+    marginTop: 20,
+    justifyContent: 'center',
     marginBottom: hp('1%'),
     height: hp('6%'),
     width: wp('16.8%'),
     alignItems: 'center',
-    justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 30,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: 'rgba(246, 246, 246, 1)',
     fill: '#DADADA',
   },
   activeRemoveBtn: {
-    backgroundColor: '#FF6C00',
-    fill: '#FFFFFF',
+    backgroundColor: 'rgba(246, 246, 246, 1)',
+    fill: 'rgba(218, 218, 218, 1)',
   },
   changedRemoveBtn: {
     alignSelf: 'flex-start',

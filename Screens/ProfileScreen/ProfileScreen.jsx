@@ -138,7 +138,7 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
 
               <TouchableOpacity style={styles.buttonAvatar} onPress={changeAvatar}>
-                <Text style={styles.buttonAvatarText}>{'+'}</Text>
+                <Text style={styles.buttonAvatarText}>{'x'}</Text>
               </TouchableOpacity>
             </View>
 
@@ -213,11 +213,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#FF6C00',
+    borderColor: '#BDBDBD',
     backgroundColor: '#ffffff',
   },
   buttonAvatarText: {
-    color: '#FF6C00',
+    color: '#BDBDBD',
   },
   exitBtn: {
     position: 'absolute',
@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
     color: '#BDBDBD',
   },
   login: {
+    marginTop: 20,
     marginBottom: 5,
     alignSelf: 'center',
     fontFamily: 'Roboto-Regular',
