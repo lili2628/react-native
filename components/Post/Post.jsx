@@ -9,7 +9,7 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
-import { collection, getCountFromServer, onSnapshot, getDocs, updateDoc, doc, getDoc  } from 'firebase/firestore';
+import { collection, getCountFromServer, updateDoc, doc, getDoc  } from 'firebase/firestore';
 
 import { db } from '../../firebase/config.js';
 

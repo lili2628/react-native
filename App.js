@@ -1,8 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React from "react";
-import { useEffect } from 'react';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 
 
 import { useFonts } from 'expo-font';
